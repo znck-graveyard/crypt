@@ -3,11 +3,10 @@
 #include <cstdio>
 #include <vector>
 #include <cctype>
-#include "rijndael.h"
+#include "aes.h"
 
-
-    using namespace std;
-    using namespace znck;
+using namespace std;
+using namespace znck;
 
 byte hex_val(byte x) {
     x = tolower(x);
@@ -18,13 +17,12 @@ byte hex_val(byte x) {
 
 int main() {
 
-    byte input[32], * output;
+    byte input[32];
     cout << "Key(in hex):: ";
     cin >> input;
     byte key[16];
     for (int i = 0; i < 16; ++i) key[i] = hex_val(input[2 * i]) << 4 | hex_val(input[2 * i + 1]);
-    output = rijndael::expand_key(key);
-
+    
     cout << "PT(in hex):: ";
     byte ln, hn;
     vector<byte> message;
@@ -36,27 +34,25 @@ int main() {
         message.push_back(hex_val(hn) << 4 | hex_val(ln));
         if (cin.eof()) break;
     }
-    byte rem = message.size() % 16;
-    cout << "Message length:: " << message.size() << endl;
-    while (rem > 0) {
-        message.push_back(rem << 4 | rem);
-        --rem;
-    }
+
+    cout << "Message length:: " << message.size() << "byte" << endl;
+    
     byte * CT = new byte[message.size()];
    
     for (int i = 0; i < message.size(); ++i) {
         CT[i] = message[i];
     }
 
-    for (int i = 0; i < message.size(); i += 16) {
-        rijndael::encrypt(output, CT + i);
-    }
+    size_t length = message.size();
+    AES::decrypt(input, CT, length, AES_MODE_CTR);
 
-    cout << "CT(in hex):: ";
-    for (int i = 0; i < message.size(); ++i) {
-        printf("%02x", CT[i]);
+    cout << "Message length:: " << length << "byte" << endl;
+    cout << "CT(in hex):: " ;
+    for (int i = 0; i < length; ++i) {
+        printf("%c", CT[i + 16]);
     }
     cout << endl;
+
     return 0;
 }
 #endif

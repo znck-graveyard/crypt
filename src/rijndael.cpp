@@ -96,7 +96,7 @@ byte * rijndael::expand_key(const byte key[16]) {
 
 byte * rijndael::sub_bytes(byte *in) {
     for (int i = 0; i < 16; ++i) {
-        in[i] = rijndael::get_inv_sbox(in[i]);
+        in[i] = rijndael::get_sbox(in[i]);
     }
     
     return in;
@@ -104,7 +104,7 @@ byte * rijndael::sub_bytes(byte *in) {
 
 byte * rijndael::inv_sub_bytes(byte *in) {
     for (int i = 0; i < 16; ++i) {
-        in[i] = rijndael::get_sbox(in[i]);
+        in[i] = rijndael::get_inv_sbox(in[i]);
     }
     
     return in;
@@ -137,11 +137,11 @@ static byte * shift_row(byte *in) {
 static byte * inv_shift_row(byte *in) {
     byte temp;
     // Row 2
-    temp   = in[13];
+    temp  = in[1];
+    in[1] = in[13];
     in[13] = in[9];
-    in[9]  = in[5];
-    in[5]  = in[1];
-    in[1]  = temp;
+    in[9] = in[5];
+    in[5] = temp;
     // Row 3
     temp   = in[2];
     in[ 2] = in[10];
@@ -150,8 +150,8 @@ static byte * inv_shift_row(byte *in) {
     in[ 6] = in[14];
     in[14] = temp;
     // Row 4
-    temp   = in[5];
-    in[5]  = in[7];
+    temp   = in[3];
+    in[3]  = in[7];
     in[7]  = in[11];
     in[11] = in[15];
     in[15] = temp;
@@ -186,7 +186,7 @@ byte * rijndael::encrypt(const byte *key, byte *state) {
     for (int i = 1; i < 11; ++i) {
         sub_bytes(state);
         shift_row(state);
-        if (10 != i) { mix_columns(state); }
+        if (10 != i) { mix_columns(state);}
         add_round_key(key + (i * 16), state);
     }
 
@@ -195,11 +195,11 @@ byte * rijndael::encrypt(const byte *key, byte *state) {
 
 byte * rijndael::decrypt(const byte *key, byte *state) {
     add_round_key(key + 160, state);
-    for (int i = 10; i > 0; --i) {
+    for (int i = 9; i >= 0; --i) {
         inv_shift_row(state);
         inv_sub_bytes(state);
         add_round_key(key + i * 16, state);
-        if (1 != i) { inv_mix_columns(state); }
+        if (0 != i) { inv_mix_columns(state); }
     }
     return state;
 }

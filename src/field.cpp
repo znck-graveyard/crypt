@@ -37,10 +37,10 @@ u32 znck::gmix_col(u32 in) {
     byte a[4], r[4];
     conv_u32_to_u8(in, a);
 
-    r[0] = gmul(a[0],2) ^ gmul(a[3],1) ^ gmul(a[2],1) ^ gmul(a[1],3);
-    r[1] = gmul(a[1],2) ^ gmul(a[0],1) ^ gmul(a[3],1) ^ gmul(a[2],3);
-    r[2] = gmul(a[2],2) ^ gmul(a[1],1) ^ gmul(a[0],1) ^ gmul(a[3],3);
-    r[3] = gmul(a[3],2) ^ gmul(a[2],1) ^ gmul(a[1],1) ^ gmul(a[0],3);
+    r[0] = gmul(a[0],2) ^ gmul(a[1],3) ^ gmul(a[2],1) ^ gmul(a[3],1);
+    r[1] = gmul(a[0],1) ^ gmul(a[1],2) ^ gmul(a[2],3) ^ gmul(a[3],1);
+    r[2] = gmul(a[0],1) ^ gmul(a[1],1) ^ gmul(a[2],2) ^ gmul(a[3],3);
+    r[3] = gmul(a[0],3) ^ gmul(a[1],1) ^ gmul(a[2],1) ^ gmul(a[3],2);
 
     return conv_u8_to_u32(r);
 }
@@ -49,10 +49,10 @@ u32 znck::inv_gmix_col(u32 in) {
     byte a[4], r[4];
     conv_u32_to_u8(in, a);
 
-    r[0] = gmul(a[0],14) ^ gmul(a[3],11) ^ gmul(a[2],13) ^ gmul(a[1],9);
-    r[1] = gmul(a[1],14) ^ gmul(a[0],11) ^ gmul(a[3],13) ^ gmul(a[2],9);
-    r[2] = gmul(a[2],14) ^ gmul(a[1],11) ^ gmul(a[0],13) ^ gmul(a[3],9);
-    r[3] = gmul(a[3],14) ^ gmul(a[2],11) ^ gmul(a[1],13) ^ gmul(a[0],9);
+    r[0] = gmul(a[0],14) ^ gmul(a[1],11) ^ gmul(a[2],13) ^ gmul(a[3], 9);
+    r[1] = gmul(a[0], 9) ^ gmul(a[1],14) ^ gmul(a[2],11) ^ gmul(a[3],13);
+    r[2] = gmul(a[0],13) ^ gmul(a[1], 9) ^ gmul(a[2],14) ^ gmul(a[3],11);
+    r[3] = gmul(a[0],11) ^ gmul(a[1],13) ^ gmul(a[2], 9) ^ gmul(a[3],14);
 
     return conv_u8_to_u32(r);
 }

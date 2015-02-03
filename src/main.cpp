@@ -4,6 +4,7 @@
 #include <vector>
 #include <cctype>
 #include "aes.h"
+#include "rijndael.h"
 
 using namespace std;
 using namespace znck;
@@ -23,7 +24,7 @@ int main() {
     byte key[16];
     for (int i = 0; i < 16; ++i) key[i] = hex_val(input[2 * i]) << 4 | hex_val(input[2 * i + 1]);
     
-    cout << "PT(in hex):: ";
+    cout << "PT(in hex) :: ";
     byte ln, hn;
     vector<byte> message;
     getchar();
@@ -44,14 +45,19 @@ int main() {
     }
 
     size_t length = message.size();
-    AES::decrypt(input, CT, length, AES_MODE_CTR);
+    CT = AES::encrypt(input, CT, length, AES_MODE_ECB);
 
     cout << "Message length:: " << length << "byte" << endl;
     cout << "CT(in hex):: " ;
     for (int i = 0; i < length; ++i) {
-        printf("%c", CT[i + 16]);
+        printf("%c", CT[i]);
     }
     cout << endl;
+
+    for (int i = 0; i < message.size(); ++i) {
+        CT[i] = message[i];
+    }
+
 
     return 0;
 }

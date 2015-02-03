@@ -10,9 +10,9 @@ using namespace std;
 using namespace znck;
 
 byte hex_val(byte x) {
-    x = tolower(x);
     if ('0' <= x && x <= '9') return x - '0';
     else if ('a' <= x && x <= 'f') return x - 'a' + 10;
+    else if ('A' <= x && x <= 'F') return x - 'A' + 10;
     else return 0xff;
 }
 
@@ -24,7 +24,7 @@ int main() {
     byte key[16];
     for (int i = 0; i < 16; ++i) key[i] = hex_val(input[2 * i]) << 4 | hex_val(input[2 * i + 1]);
     
-    cout << "PT(in hex) :: ";
+    cout << "CT(in hex) :: ";
     byte ln, hn;
     vector<byte> message;
     getchar();
@@ -45,19 +45,14 @@ int main() {
     }
 
     size_t length = message.size();
-    CT = AES::encrypt(input, CT, length, AES_MODE_ECB);
+    CT = AES::decrypt(key, CT, length, AES_MODE_CTR);
 
     cout << "Message length:: " << length << "byte" << endl;
-    cout << "CT(in hex):: " ;
+    cout << "PT(in hex):: \n" ;
     for (int i = 0; i < length; ++i) {
-        printf("%c", CT[i]);
+        printf("%c", CT[i]) ;
     }
     cout << endl;
-
-    for (int i = 0; i < message.size(); ++i) {
-        CT[i] = message[i];
-    }
-
 
     return 0;
 }

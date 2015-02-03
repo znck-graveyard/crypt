@@ -34,50 +34,42 @@ static inline void print(byte * in) {
 }
 
 // TODO make it generic
-static byte *ctr_decrypt(byte *key, byte *message, size_t len) {
+static byte *ctr_decrypt(byte *key, byte *message, size_t &len) {
 	byte c = 0;
-	 byte *IV;
-	printf("IV::"); print(IV);
-	for (int i = 0; i < len; i += 16) {
+	byte *IV = message;
+	for (int i = 16; i < 16 + len; i += 16) {
 		rijndael::decrypt(key, message + i);
-		printf("IM::"); print(message + i);
 		for (int j = 0; j < 16; ++j) {
 			message[i + j] ^= IV[j];
 		}
 		message[i + 15] ^= c;
-		printf(" M::"); print(message + i);
 		++c;
 	}
-	return message;
+	return message + 16;
 }
 
-static byte *cbc_decrypt(byte *key, byte *message, size_t len) {
+static byte *cbc_decrypt(byte *key, byte *message, size_t &len) {
 	byte c[32] = {0};
 	// Copy IV
 	strncpy((char *)c, (const char *)(message), 16);
 	for (int i = 16; i < 16 + len; i += 16) {
 		// Copy current block
 		strncpy((char *)(c + 16), (const char *)message + i, 16);
-		printf("C::"); print(message + i);
 		rijndael::decrypt(key, message + i);
-		printf("D::"); print(message + i);
-		printf("Q::"); print(c);
 		for (int j = 0; j < 16; ++j) {
 			message[i + j] ^= c[j];
 		}
-		printf("M::"); print(message + i);
-		printf("\n");
 		// Queue current cipher block for next chaining
 		strncpy((char *)c, (const char *)(c + 16), 16);
 	}
-	return message;
+
+	len -= message[len + 15];
+	return message + 16;
 }
 
 static byte *ecb_encrypt(byte *key, byte *message, size_t len) {
 	for (int i = 0; i < len; i += 16) {
-		printf("P::"); print(message + i);
 		rijndael::encrypt(key, message + i);
-		printf("C::"); print(message + i);
 	}
 	return message;
 }
@@ -99,9 +91,7 @@ byte * AES::encrypt(const byte *k, byte *message, size_t &len, byte mode, byte *
 
 static byte *ecb_decrypt(byte *key, byte *message, size_t len) {
 	for (int i = 0; i < len; i += 16) {
-		printf("C::"); print(message + i);
 		rijndael::decrypt(key, message + i);
-		printf("P::"); print(message + i);
 	}
 	return message;
 }

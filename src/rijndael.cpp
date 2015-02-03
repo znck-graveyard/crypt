@@ -63,6 +63,7 @@ byte rijndael::get_rcon(byte in) {
 
     return rcon[in];
 }
+#include <cstdio>
 
 byte * rijndael::expand_key(const byte key[16]) {
     byte *ex = new byte[176];
@@ -90,7 +91,6 @@ byte * rijndael::expand_key(const byte key[16]) {
             ++i;
         }
     }
-
     return ex;
 }
 

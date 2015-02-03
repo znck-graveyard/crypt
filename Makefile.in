@@ -1,0 +1,40 @@
+# Default task
+all: build link
+
+# Building
+build: .print $(OBJECTS)
+	@echo ""
+
+# Linking
+link: $(TARGET)
+
+# Build and run
+run: all
+	@echo "# Running"
+	@$(TARGET)
+	@echo ""
+
+.PHONY: clean
+
+.print: 
+	@echo "# Building"
+
+help:
+	@echo 'make <all, clean, build, link, run>'
+
+$(TARGET): $(OBJECTS)
+	@echo "\n# Linking"
+	@mkdir -p $(OUTPUT)
+	$(CC) $^ -o $(TARGET) $(LIB)
+	@echo "\n# Executable Binary: $(TARGET)"
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
+	@if [ ! -f $@ ]; then mkdir -p $@; rm -r $@; fi
+	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+
+
+# Cleaning all files
+clean:
+	@echo "# Cleaning"; 
+	@$(RM) -r -v $(BUILDDIR) $(OUTPUT)
+	@echo ""
